@@ -67,8 +67,9 @@ class LoadRSImagePatch(object):
         if self.to_float32:
             img = img.astype(np.float32)
 
-
-        results['filename'] = osp.join('I%d'%img_id,'I%d_%d.tif'%(img_id,patch_idx))      # save file name?
+        results['out_file'] = 'I%d_%d.tif' % (img_id, patch_idx) # # save file name?
+        results['boundary'] = patch_obj.boundary
+        results['filename'] = osp.join('I%d'%img_id,'I%d_%d.tif'%(img_id,patch_idx))
         results['ori_filename'] = patch_obj.org_img # results['img_info']['filename']
         results['img'] = img
         results['img_shape'] = img.shape
