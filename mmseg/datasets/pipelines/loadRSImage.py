@@ -75,9 +75,10 @@ class LoadRSImagePatch(object):
         if self.to_float32:
             img = img.astype(np.float32)
 
-        results['out_file'] = 'I%d_%d.tif' % (img_id, patch_idx) # # save file name?
+        # only keys in meta_keys (datasets/pipelines/formatting.py) can pass to img_meta (for saving results)
+        # so need to modify meta_keys
         results['boundary'] = boundary
-        results['filename'] = osp.join('I%d'%img_id,'I%d_%d.tif'%(img_id,patch_idx))
+        results['filename'] = 'I%d_%d.tif' % (img_id, patch_idx)    # the save file name
         results['ori_filename'] = org_img # results['img_info']['filename']
         results['img'] = img
         results['img_shape'] = img.shape
