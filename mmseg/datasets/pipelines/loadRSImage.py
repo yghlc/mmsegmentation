@@ -66,9 +66,13 @@ class LoadRSImagePatch(object):
         #     self.file_client = mmcv.FileClient(**self.file_client_args)
         print('__call__ of LoadRSImagePatch','try to read a image patch',results)
         img_id, org_img,boundary, patch_idx = results['img_id'], results['org_img'],results['boundary'], results['patch_idx']
+        # read image is ()
         img, nodata = raster_io.read_raster_all_bands_np(org_img, boundary=boundary)
         if nodata is not None:
             img[np.where(img == nodata)] = 0  # replace nodata as 0
+
+        # to OpenCV format (required by mmseg)
+        img = img.transpose(1, 2, 0)  # to opencv format  ()
 
         if self.to_float32:
             img = img.astype(np.float32)
