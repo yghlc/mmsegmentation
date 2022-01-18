@@ -60,7 +60,6 @@ class RSImagePatches(CustomDataset):
             print('\n self defined parameters:',split,rsimage,rsImg_id,tile_width,tile_height,overlay_x,overlay_y)
             print('\n kwargs:',kwargs)
 
-
             # super(RSImagePatches, self).__init__(
             #     img_suffix='.png', seg_map_suffix='.png', split=None, test_mode=test_mode, **kwargs)
             self.pipeline = Compose(pipeline)
@@ -112,7 +111,7 @@ class RSImagePatches(CustomDataset):
 
         if self.rsImg_predict:
             # need something else
-            print('get %d patch'%idx)
+            # print('get %d patch'%idx)
             img_patch = self.img_patches[idx]
 
             results = {}

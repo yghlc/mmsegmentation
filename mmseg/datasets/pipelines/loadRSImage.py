@@ -50,7 +50,6 @@ class LoadRSImagePatch(object):
         # self.file_client_args = file_client_args.copy()
         # self.file_client = None
         # self.imdecode_backend = imdecode_backend
-        print('__init__ of LoadRSImagePatch')
 
     def __call__(self, results):
         """Call functions to load image and get image meta information.
@@ -64,7 +63,6 @@ class LoadRSImagePatch(object):
 
         # if self.file_client is None:
         #     self.file_client = mmcv.FileClient(**self.file_client_args)
-        print('__call__ of LoadRSImagePatch','try to read a image patch',results)
         img_id, org_img,boundary, patch_idx = results['img_id'], results['org_img'],results['boundary'], results['patch_idx']
         # read image is ()
         img, nodata = raster_io.read_raster_all_bands_np(org_img, boundary=boundary)
@@ -95,7 +93,6 @@ class LoadRSImagePatch(object):
         return results
 
     def __repr__(self):
-        print('__repr__ of LoadRSImagePatch')
         repr_str = self.__class__.__name__
         repr_str += f'(to_float32={self.to_float32},'
         repr_str += f"color_type='{self.color_type}',"
