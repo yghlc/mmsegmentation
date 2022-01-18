@@ -113,7 +113,17 @@ class RSImagePatches(CustomDataset):
         if self.rsImg_predict:
             # need something else
             print('get %d patch'%idx)
-            return self.img_patches[idx]
+            img_patch = self.img_patches[idx]
+
+            results = {}
+
+            # self.pre_pipeline(results)
+            results['img_id'] = img_patch['img_id']
+            results['org_img'] = img_patch['org_img']
+            results['boundary'] = img_patch['boundary']
+            results['patch_idx'] = img_patch['patch_idx']
+
+            return self.pipeline(results)
         else:
             return self.prepare_train_img(idx)
 
