@@ -6,11 +6,12 @@ import os.path as osp
 from mmseg.datasets.builder import DATASETS
 from mmseg.datasets.custom import CustomDataset
 
+from mmseg.datasets.pipelines import Compose
+
 import os,sys
 
 deeplabforRS =  os.path.expanduser('~/codes/PycharmProjects/DeeplabforRS')
 sys.path.insert(0, deeplabforRS)
-import basic_src.io_function as io_function
 import split_image
 import raster_io
 
@@ -37,15 +38,15 @@ class RSImagePatches(CustomDataset):
 
     PALETTE = [[0, 0, 0], [0, 0, 128]]
 
-    def __init__(self, split,test_mode=False,rsimage='',rsImg_id=0,tile_width=480,tile_height=480,
-                 overlay_x=160,overlay_y=160, **kwargs):
+    def __init__(self,pipeline,split=None,rsImg_predict=False,rsimage='',rsImg_id=0,tile_width=480,tile_height=480,
+                 overlay_x=160,overlay_y=160,classes=None,palette=None, **kwargs):
         """
         get patches of a remote sensing images for predictions, in the training part, still using the MMSeg default loader
         Only handle one remote sensing images
 
         Args:
             split: split
-            test_mode: test or not
+            rsImg_predict: if prediction of remote sensing images
             rsimage: a list containing the path of a remote sensing image
             rsImg_id: the id (int) of the input rsimage
             tile_width: width of the patch
@@ -54,15 +55,42 @@ class RSImagePatches(CustomDataset):
             overlay_y: adjacent overlap in Y directory
             **kwargs:
         """
-        if test_mode:
+        if rsImg_predict:
+            print('\n self defined parameters:',split,rsimage,rsImg_id,tile_width,tile_height,overlay_x,overlay_y)
+            print('\n kwargs:',kwargs)
+
+
             # super(RSImagePatches, self).__init__(
-            #     img_suffix='.png', seg_map_suffix='.png', split=split, test_mode=test_mode, **kwargs)
+            #     img_suffix='.png', seg_map_suffix='.png', split=None, test_mode=test_mode, **kwargs)
+            self.pipeline = Compose(pipeline)
+            # self.img_dir = img_dir
+            # self.img_suffix = img_suffix
+            # self.ann_dir = ann_dir
+            # self.seg_map_suffix = seg_map_suffix
+            self.split = split
+            self.data_root = None
+            self.rsImg_predict = rsImg_predict
+            # self.test_mode = test_mode
+            # self.ignore_index = ignore_index
+            # self.reduce_zero_label = reduce_zero_label
+            # self.label_map = None
+            self.CLASSES, self.PALETTE = self.get_classes_and_palette(
+                classes, palette)
+            # self.gt_seg_map_loader = LoadAnnotations(
+            # ) if gt_seg_map_loader_cfg is None else LoadAnnotations(
+            #     **gt_seg_map_loader_cfg)
+
+
+            assert self.CLASSES is not None, \
+                    '`cls.CLASSES` or `classes` should be specified when testing'
+
 
             # initialize the images
             assert len(rsimage) > 1 and osp.exists(rsimage)
             patches_of_a_image = self.get_an_image_patches(rsimage, tile_width, tile_height, overlay_x, overlay_y)
-            self.img_infos = [ {'img_id':rsImg_id, 'patch_idx':idx, 'patch_obj':patch }
+            self.img_patches = [ {'img_id':rsImg_id, 'patch_idx':idx, 'org_img':patch.org_img, 'boundary':patch.boundary }
                                for idx, patch in enumerate(patches_of_a_image)]
+            print('total patches for %s is: %d'%(rsimage, len(self.img_patches)))
 
         else:
             super(RSImagePatches, self).__init__(
@@ -81,11 +109,20 @@ class RSImagePatches(CustomDataset):
                 False).
         """
 
-        if self.test_mode:
+        if self.rsImg_predict:
             # need something else
-            return self.img_infos[idx]
+            print('get %d patch'%idx)
+            return self.img_patches[idx]
         else:
             return self.prepare_train_img(idx)
+
+    def __len__(self):
+        """Total number of samples of data."""
+        if self.rsImg_predict:
+            return len(self.img_patches)
+        else:
+            return len(self.img_infos)
+
 
     def get_an_image_patches(self,image_path,tile_width,tile_height,overlay_x,overlay_y):
 
@@ -98,6 +135,8 @@ class RSImagePatches(CustomDataset):
             img_patch = patchclass(image_path, patch)
             patches_of_a_image.append(img_patch)
         return patches_of_a_image
+
+
 
 
 if __name__ == '__main__':

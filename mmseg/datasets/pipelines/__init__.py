@@ -3,7 +3,7 @@ from .compose import Compose
 from .formatting import (Collect, ImageToTensor, ToDataContainer, ToTensor,
                          Transpose, to_tensor)
 from .loading import LoadAnnotations, LoadImageFromFile
-from .RSImageMMSeg import LoadRSImagePatch
+from .loadRSImage import LoadRSImagePatch
 from .test_time_aug import MultiScaleFlipAug
 from .transforms import (CLAHE, AdjustGamma, Normalize, Pad,
                          PhotoMetricDistortion, RandomCrop, RandomCutOut,
