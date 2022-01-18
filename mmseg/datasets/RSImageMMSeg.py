@@ -38,7 +38,7 @@ class RSImagePatches(CustomDataset):
 
     PALETTE = [[0, 0, 0], [0, 0, 128]]
 
-    def __init__(self,pipeline,split=None,rsImg_predict=False,rsimage='',rsImg_id=0,tile_width=480,tile_height=480,
+    def __init__(self,pipeline,split=None,test_mode=False,rsImg_predict=False,rsimage='',rsImg_id=0,tile_width=480,tile_height=480,
                  overlay_x=160,overlay_y=160,classes=None,palette=None, **kwargs):
         """
         get patches of a remote sensing images for predictions, in the training part, still using the MMSeg default loader
