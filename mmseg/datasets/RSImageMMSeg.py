@@ -55,6 +55,7 @@ class RSImagePatches(CustomDataset):
             overlay_y: adjacent overlap in Y directory
             **kwargs:
         """
+        self.rsImg_predict = False
         if rsImg_predict:
             print('\n self defined parameters:',split,rsimage,rsImg_id,tile_width,tile_height,overlay_x,overlay_y)
             print('\n kwargs:',kwargs)
@@ -93,7 +94,7 @@ class RSImagePatches(CustomDataset):
             print('total patches for %s is: %d'%(rsimage, len(self.img_patches)))
 
         else:
-            super(RSImagePatches, self).__init__(
+            super(RSImagePatches, self).__init__(pipeline,
                 img_suffix='.png', seg_map_suffix='.png', split=split, test_mode=test_mode, **kwargs)
             # check image dir's existence
             assert osp.exists(self.img_dir) and self.split is not None
