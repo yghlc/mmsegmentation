@@ -44,12 +44,13 @@ class LoadRSImagePatch(object):
                  to_float32=False,
                  color_type='color',
                  file_client_args=dict(backend='disk'),
-                 imdecode_backend='cv2'):
+                 imdecode_backend='gdal'):
         self.to_float32 = to_float32
-        # self.color_type = color_type
-        # self.file_client_args = file_client_args.copy()
-        # self.file_client = None
-        # self.imdecode_backend = imdecode_backend
+        self.color_type = color_type
+        self.file_client_args = file_client_args.copy()
+        self.file_client = None
+        self.imdecode_backend = imdecode_backend
+        # print('LoadRSImagePatch init, to_float32', self.to_float32)
 
     def __call__(self, results):
         """Call functions to load image and get image meta information.
@@ -69,11 +70,19 @@ class LoadRSImagePatch(object):
         if nodata is not None:
             img[np.where(img == nodata)] = 0  # replace nodata as 0
 
+        # print('before transpose loadRSImage img info, shape, type, max, mean, min:',img.shape,img.dtype, np.max(img),np.mean(img), np.min(img))
+        # print('before transpose loadRSImage img, mean,', 'band 1,', np.mean(img[0,:,:]), 'band 2', np.mean(img[1,:,:]), 'band 3', np.mean(img[2,:,:]))
+
         # to OpenCV format (required by mmseg)
         img = img.transpose(1, 2, 0)  # to opencv format  ()
+        # RGB to BGR: Matplotlib image to OpenCV https://www.scivision.dev/numpy-image-bgr-to-rgb/
+        img = img[...,::-1].copy()    
 
         if self.to_float32:
             img = img.astype(np.float32)
+
+        # print('loadRSImage img info, shape, type, max, mean, min:',img.shape,img.dtype, np.max(img),np.mean(img), np.min(img))
+        # print('loadRSImage img, mean,', 'band 1,', np.mean(img[:,:,0]), 'band 2', np.mean(img[:,:,1]), 'band 3', np.mean(img[:,:,2]))
 
         # only keys in meta_keys (datasets/pipelines/formatting.py) can pass to img_meta (for saving results)
         # so need to modify meta_keys

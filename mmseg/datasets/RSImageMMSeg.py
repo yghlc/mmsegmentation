@@ -81,6 +81,7 @@ class RSImagePatches(CustomDataset):
             #     **gt_seg_map_loader_cfg)
 
 
+            # print('RSImagePatches rsImg_predict (True) self.pipeline:',self.pipeline)
             assert self.CLASSES is not None, \
                     '`cls.CLASSES` or `classes` should be specified when testing'
 
@@ -97,6 +98,8 @@ class RSImagePatches(CustomDataset):
                 img_suffix='.png', seg_map_suffix='.png', split=split, test_mode=test_mode, **kwargs)
             # check image dir's existence
             assert osp.exists(self.img_dir) and self.split is not None
+
+            # print('RSImagePatches rsImg_predict (False) self.pipeline:',self.pipeline)
 
     def __getitem__(self, idx):
         """Get training/test data after pipeline.
@@ -122,8 +125,10 @@ class RSImagePatches(CustomDataset):
             results['boundary'] = img_patch['boundary']
             results['patch_idx'] = img_patch['patch_idx']
 
+            # print('getitem rsImg_predict (True) pipeline(results)', self.pipeline(results))
             return self.pipeline(results)
         else:
+            # print('getitem rsImg_predict (False) self.prepare_train_img(idx)', self.prepare_train_img(idx))
             return self.prepare_train_img(idx)
 
     def __len__(self):

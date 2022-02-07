@@ -38,6 +38,8 @@ class LoadImageFromFile(object):
         self.file_client_args = file_client_args.copy()
         self.file_client = None
         self.imdecode_backend = imdecode_backend
+        # print('LoadImageFromFile init, to_float32,color_type,file_client_args,file_client,imdecode_backend:',
+        # self.to_float32,self.color_type,self.file_client_args, self.file_client,self.imdecode_backend)
 
     def __call__(self, results):
         """Call functions to load image and get image meta information.
@@ -62,6 +64,9 @@ class LoadImageFromFile(object):
             img_bytes, flag=self.color_type, backend=self.imdecode_backend)
         if self.to_float32:
             img = img.astype(np.float32)
+
+        # print('loading img info, shape, type, max, mean, min:',img.shape,img.dtype, np.max(img),np.mean(img),np.min(img))
+        # print('loading img, mean,', 'band 1,', np.mean(img[:,:,0]), 'band 2', np.mean(img[:,:,1]), 'band 3', np.mean(img[:,:,2]))
 
         results['filename'] = filename
         results['ori_filename'] = results['img_info']['filename']
